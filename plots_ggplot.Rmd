@@ -7,4 +7,83 @@ output: html_document
 
 # Plots with ggplot2
 
-We are going to make plots in R and it's going to be amazing.
+```{r calls, echo=FALSE}
+library(tidyverse)
+library(readxl)
+library(here)
+```
+
+```{r read, echo=FALSE}
+ca_np <- read.csv(here("data", "ca_np.csv"))
+ci_np <- read_excel(here("data", "ci_np.xlsx"))
+```
+
+```{r line plot}
+ggplot(data = ci_np, aes(x=year, y=visitors))+
+  geom_line()
+```
+
+```{r store base plot}
+gg_base <- ggplot(data = ci_np, aes(x=year,y=visitors))
+```
+
+```{r scatter plot}
+gg_base +
+  geom_point()
+```
+
+```{r column plot}
+gg_base+
+  geom_col()
+```
+
+```{r area plot}
+gg_base +
+  geom_area()
+```
+
+```{r line plot viz}
+gg_base +
+  geom_line(
+    color = "purple",
+    linetype = "dashed"
+  )
+```
+
+```{r scatter plot viz}
+gg_base + 
+  geom_point(
+    color = "purple",
+    pch = 17,
+    size = 4,
+    alpha = 0.5
+  )
+```
+
+```{r column plot viz}
+gg_base +
+  geom_col(
+    color = "royalblue",
+    fill = "skyblue",
+    linetype = "solid",
+    size = 0.5,
+    alpha = 0.75,
+  )
+```
+
+```{r scatter plot var viz}
+gg_base +
+  geom_point(
+    aes(size = visitors,
+    color = visitors),
+    alpha = 0.5
+  )
+```
+
+```{r column plot var viz}
+gg_base +
+  geom_col(
+    aes(fill=visitors)
+  )
+```
+
