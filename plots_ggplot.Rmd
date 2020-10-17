@@ -11,6 +11,7 @@ output: html_document
 library(tidyverse)
 library(readxl)
 library(here)
+library(scales)
 ```
 
 ```{r read, echo=FALSE}
@@ -77,7 +78,8 @@ gg_base +
     aes(size = visitors,
     color = visitors),
     alpha = 0.5
-  )
+  ) +
+  theme_minimal()
 ```
 
 ```{r column plot var viz}
@@ -85,5 +87,58 @@ gg_base +
   geom_col(
     aes(fill=visitors)
   )
+```
+
+```{r line plot lab viz}
+gg_base +
+  geom_line(linetype = "dotted") +
+  theme_bw() +
+  labs(
+    x = "Year",
+    y = "Annual park visitors",
+    title = "Channel Islands NP Visitation",
+    subtitle = "(1963 - 2016)"
+  ) +
+  scale_y_continuous(labels = comma)
+```
+
+```{r line plot multi viz}
+gg_base +
+  geom_line(color = "purple") +
+  geom_point(color = "orange",
+             aes(size = year),
+             alpha = 0.5)
+```
+
+```{r column plot multi viz}
+gg_base +
+  geom_col(fill = "orange",
+           color = "purple") +
+  geom_line(color = "green")
+```
+
+```{r store 2nd base plot}
+gg_np <- ggplot(data = ca_np, aes(year, visitors, group = park_name)) +
+  scale_y_continuous(labels = comma)
+```
+
+```{r facet line plots}
+gg_np +
+  geom_line(show.legend = F) +
+  theme_bw() +
+  labs(x = "Year", y = "Annual Visitors") +
+  facet_wrap(~park_name)
+```
+
+```{r fact column plots}
+gg_np +
+  geom_col(show.legend = F) +
+  theme_bw() +
+  labs(x = "Year", y = "Annual Visitors") +
+  facet_wrap(~park_name)
+```
+
+```{r ggsave export}
+ggsave(here("figures", "np_graph.jpg"), dpi = 180, width = 8, height = 7)
 ```
 
