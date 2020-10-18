@@ -99,3 +99,18 @@ ggplot(data = siteyear_summary2, aes(year, median_size_mm, color = site)) +
 
 ggsave(here("figures", "lobsters2-bar_facet.png"), dpi = 180, width = 7, height = 5)
 ```
+
+##Mutate Function
+```{r add column}
+lobsters_detailed <- lobsters %>% 
+  mutate(size_m = size_mm / 1000,
+         millenia = 2000,
+         observer = "Allison Horst")
+```
+
+##Select Function
+```{r select target columns}
+lobsters_detailed %>% 
+  select(date,site,size_m)
+```
+
