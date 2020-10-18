@@ -1,0 +1,101 @@
+---
+title: "Using dplyr in R with Lobster Data"
+author: "Bryan Zirkle"
+date: "10/17/2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+## attach libraries
+library(tidyverse)
+library(readxl)
+library(here)
+library(skimr)
+library(kableExtra) 
+```
+
+## Read In Data
+```{r read data}
+lobsters <- read_xlsx(here("data","lobsters2.xlsx"),skip = 4)
+```
+
+## Explore Data
+```{r explore data}
+skimr::skim(lobsters)
+```
+
+## Pivot Data
+```{r pivot}
+siteyear_summary <- lobsters %>% 
+  group_by(site, year) %>% 
+  summarize(count_by_year = n(),
+            mean_size_mm = mean(size_mm, na.rm = T),
+            sd_size_mm = sd(size_mm, na.rm = T))
+```
+
+## Inspect our new variable
+```{r inspect}
+siteyear_summary
+```
+
+## Make a table with our new variable
+There are `r nrow(lobsters)` total lobsters included in this report.
+```{r table format}
+siteyear_summary %>% 
+  kable()
+```
+
+##Exercise - Self-Practice
+```{r exercise}
+siteyear_summary2 <- lobsters %>% 
+  group_by(site, year) %>% 
+  summarise(count_by_year = n(),
+            mean_size_mm = mean(size_mm, na.rm = T),
+            sd_size_mm = sd(size_mm, na.rm = T),
+            median_size_mm = median(size_mm, na.rm = T))
+```
+
+##Exercise - Check
+```{r exercise check}
+siteyear_summary2
+```
+
+##Exervice - Plot 1: Line
+```{r excercise plot 1}
+ggplot(data = siteyear_summary2, aes(year, median_size_mm, color = site)) +
+  geom_line()
+
+ggsave(here("figures", "lobsters2-line.png"), dpi = 180, width = 7, height = 5)
+```
+
+##Exervice - Plot 2: Line Facet
+```{r excercise plot 2}
+ggplot(data = siteyear_summary2, aes(year, median_size_mm, color = site)) +
+  geom_line(show.legend = F) +
+  facet_wrap(~site)
+
+ggsave(here("figures", "lobsters2-line_facet.png"), dpi = 180, width = 7, height = 5)
+```
+
+##Exervice - Plot 3: Bar
+```{r excercise plot 3}
+ggplot(data = siteyear_summary2, aes(year, median_size_mm, color = site)) +
+  geom_col(aes(fill=site), alpha = 0.5) +
+  theme_light()
+
+ggsave(here("figures", "lobsters2-bar.png"), dpi = 180, width = 7, height = 5)
+```
+
+##Exervice - Plot 4: Bar Facet
+```{r excercise plot 4}
+ggplot(data = siteyear_summary2, aes(year, median_size_mm, color = site)) +
+  geom_col(show.legend = F,
+           aes(fill=site)) +
+  facet_wrap(~site)
+
+ggsave(here("figures", "lobsters2-bar_facet.png"), dpi = 180, width = 7, height = 5)
+```
