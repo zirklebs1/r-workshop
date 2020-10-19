@@ -1,0 +1,94 @@
+---
+title: "My Tidy"
+author: "Bryan Zirkle"
+date: "10/19/2020"
+output: html_document
+---
+## Attach Pacakges
+```{r packages}
+library(tidyverse)
+library(here)
+library(janitor)
+library(readxl)
+```
+
+## Load Data
+```{r load data}
+inverts <- read_excel(here("data","inverts.xlsx"))
+```
+
+## Data Explore
+```{r explore data}
+View(inverts)
+names(inverts)
+summary(inverts)
+```
+
+## Inverts_Long
+Either single-quotes, double-quotes, OR backticks around years work!
+```{r inverts_long}
+inverts_long <- pivot_longer(data = inverts,
+                             cols = '2016':'2018',
+                             names_to = "year",
+                             values_to = "sp_count")
+```
+
+## Coerce "year" class to numeric
+```{r coerce year}
+inverts_long <-  inverts_long %>% 
+  mutate(year = as.numeric(year))
+```
+
+## Inverts_Wide
+```{r inverts_wide}
+inverts_wide <-  inverts_long %>% 
+  pivot_wider(names_from = common_name,
+              values_from = sp_count)
+```
+
+## Clean Names
+```{r cleaning}
+inverts_wide <- inverts_wide %>% 
+  clean_names()
+```
+
+## Tidy Unite
+```{r unite}
+inverts_unite <- inverts_long %>% 
+  unite(col = "site_year", #What to name the new united column
+        c(site, year), #The columns we'll unite
+        sep = "_") #How to separate the things we're uniting
+```
+
+## Activity
+```{r activity}
+inverts_moyr <- inverts_long %>% 
+  unite(col = "mo_yr",
+        c(month,year),
+        sep = "/")
+```
+
+## >2 Column Unites
+```{r unite more than 2}
+inverts_triple_unite <- inverts_long %>% 
+  tidyr::unite(col = "year_site_name",
+               c(year, site, common_name),
+               sep = "-")
+```
+
+## Separate
+```{r separate}
+inverts_sep <-  inverts_unite %>% 
+  tidyr::separate(site_year, into = c("my_site", "my_year"))
+```
+
+## Replace
+```{r replace}
+ca_abb <- inverts %>% 
+  mutate(common_name = 
+           str_replace(common_name,
+                       pattern = "california",
+                       replacement = "CA")
+  )
+```
+
